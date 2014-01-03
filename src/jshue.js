@@ -65,7 +65,7 @@ var jsHue = (function() {
     };
 
     /**
-     * Makes XHR GET, POST, PUT, and DELETE requests.
+     * Makes XHR GET, PUT, POST and DELETE requests.
      */
     var _get = _requestJsonUrl.bind(null, 'GET');
     var _put = _requestJson.bind(null, 'PUT');
