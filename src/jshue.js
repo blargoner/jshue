@@ -251,5 +251,5 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
 };
 
 if(typeof XMLHttpRequest !== 'undefined' && typeof JSON !== 'undefined') {
-    jsHue = jsHueAPI.bind(null, XMLHttpRequest, JSON);
+    var jsHue = jsHueAPI.bind(null, XMLHttpRequest, JSON);
 }
