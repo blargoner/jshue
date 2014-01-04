@@ -8,7 +8,23 @@
 
 var jsHue = (function() {
     /**
-     * Makes XHR request.
+     * Substitutes strings for URLs.
+     */
+    var _sub = function(str, data) {
+        return str.replace(/\{(\w+)\}/g, function(t, k) {
+            return data[k] ? data[k] : t;
+        });
+    };
+
+    /**
+     * Concatenates strings for URLs.
+     */
+    var _slash = function() {
+        return Array.prototype.slice.call(arguments, 0).join('/');
+    };
+
+    /**
+     * Performs XHR request.
      */
     var _request = function(method, url, body, success, failure) {
         var xhr = new XMLHttpRequest();
@@ -18,8 +34,7 @@ var jsHue = (function() {
                     success && success(xhr.responseText);
                 }
                 else {
-                    // TODO
-                    failure && failure();
+                    failure && failure({ type: 'xhr', code: xhr.status, message: xhr.statusText });
                 }
             }
         };
@@ -29,7 +44,7 @@ var jsHue = (function() {
     };
 
     /**
-     * Makes XHR request with JSON.
+     * Performs XHR request with JSON.
      */
     var _requestJson = function(method, url, data, success, failure) {
         var _success = function(data) {
@@ -37,8 +52,8 @@ var jsHue = (function() {
                 data = JSON.parse(data);
             }
             catch(e) {
-                // TODO
-                failure && failure();
+                failure && failure({ type: 'json', message: e.message });
+                return;
             }
 
             success && success(data);
@@ -49,8 +64,8 @@ var jsHue = (function() {
                 data = JSON.stringify(data);
             }
             catch(e) {
-                // TODO
-                failure && failure();
+                failure && failure({ type: 'json', message: e.message });
+                return false;
             }
         }
 
@@ -58,14 +73,14 @@ var jsHue = (function() {
     };
 
     /**
-     * Makes XHR request with JSON (no body).
+     * Performs XHR request with JSON (no body).
      */
     var _requestJsonUrl = function(method, url, success, failure) {
         return _requestJson(method, url, null, success, failure);
     };
 
     /**
-     * Makes XHR GET, PUT, POST and DELETE requests.
+     * Performs XHR GET, PUT, POST and DELETE requests.
      */
     var _get = _requestJsonUrl.bind(null, 'GET');
     var _put = _requestJson.bind(null, 'PUT');
@@ -73,13 +88,19 @@ var jsHue = (function() {
     var _delete = _requestJsonUrl.bind(null, 'DELETE');
 
     /**
-     * Constructs URL.
+     * Creates a parametrized XHR request function.
      */
-    var _url = function() {
-        return Array.prototype.slice.call(arguments, 0).join('/');
+    var _parametrize = function(method, url) {
+        return function(p) {
+            return method.apply(null, [url(p)].concat(Array.prototype.slice.call(arguments, 1)));
+        };
     };
 
     return {
+        /* ================================================== */
+        /* Portal API                                         */
+        /* ================================================== */
+
         /**
          * Discovers local bridges.
          */
@@ -88,14 +109,33 @@ var jsHue = (function() {
          * Creates bridge object.
          */
         bridge: function(ip) {
-            var bridgeUrl = _url('http:/', ip, 'api');
+            var _bridgeUrl = _sub('http://{ip}/api', { ip: ip });
             return {
                 /**
                  * Creates user object.
                  */
                 user: function(username) {
-                    var userUrl = _url(bridgeUrl, username);
+                    var _userUrl = _slash(_bridgeUrl, username),
+                        _configUrl = _slash(_userUrl, 'config'),
+                        _lightsUrl = _slash(_userUrl, 'lights'),
+                        _groupsUrl = _slash(_userUrl, 'groups'),
+                        _schedulesUrl = _slash(_userUrl, 'schedules');
+
+                    var _objectUrl = function(baseUrl) {
+                        return function(id) {
+                            return _slash(baseUrl, id);
+                        };
+                    };
+
+                    var _lightUrl = _objectUrl(_lightsUrl),
+                        _groupUrl = _objectUrl(_groupsUrl),
+                        _scheduleUrl = _objectUrl(_schedulesUrl);
+
                     return {
+                        /* ================================================== */
+                        /* Configuration API                                  */
+                        /* ================================================== */
+
                         /**
                          * Creates current user in bridge whitelist.
                          */
@@ -104,30 +144,105 @@ var jsHue = (function() {
                                 username: username,
                                 devicetype: type
                             };
-                            return _post(bridgeUrl, data, success, failure);
+                            return _post(_bridgeUrl, data, success, failure);
                         },
                         /**
                          * Deletes user from bridge whitelist.
                          */
-                        deleteUser: function(username, success, failure) {
-                            return _delete(_url(userUrl, 'config', 'whitelist', username), success, failure);
-                        },
+                        deleteUser: _parametrize(_delete, function(username) {
+                            return _slash(_configUrl, 'whitelist', username);
+                        }),
                         /**
                          * Gets bridge configuration.
                          */
-                        getConfig: _get.bind(null, _url(userUrl, 'config')),
+                        getConfig: _get.bind(null, _configUrl),
                         /**
                          * Sets bridge configuration.
                          */
-                        setConfig: _put.bind(null, _url(userUrl, 'config')),
+                        setConfig: _put.bind(null, _configUrl),
                         /**
                          * Gets bridge full state.
                          */
-                        getFullState: _get.bind(null, userUrl)
+                        getFullState: _get.bind(null, _userUrl),
 
-                        // TODO: lights
-                        // TODO: groups
-                        // TODO: schedules
+                        /* ================================================== */
+                        /* Lights API                                         */
+                        /* ================================================== */
+
+                        /**
+                         * Gets lights.
+                         */
+                        getLights: _get.bind(null, _lightsUrl),
+                        /**
+                         * Gets new lights.
+                         */
+                        getNewLights: _get.bind(null, _slash(_lightsUrl, 'new')),
+                        /**
+                         * Searches for new lights.
+                         */
+                        searchForNewLights: _post.bind(null, _lightsUrl, null),
+                        /**
+                         * Gets light attributes and state.
+                         */
+                        getLight: _parametrize(_get, _lightUrl),
+                        /**
+                         * Sets light attributes.
+                         */
+                        setLight: _parametrize(_put, _lightUrl),
+                        /**
+                         * Sets light state.
+                         */
+                        setLightState: _parametrize(_put, function(id) {
+                            return _slash(_lightUrl(id), 'state');
+                        }),
+
+                        /* ================================================== */
+                        /* Groups API                                         */
+                        /* ================================================== */
+
+                        /**
+                         * Gets groups.
+                         */
+                        getGroups: _get.bind(null, _groupsUrl),
+                        /**
+                         * Gets group attributes.
+                         */
+                        getGroup: _parametrize(_get, _groupUrl),
+                        /**
+                         * Sets group attributes.
+                         */
+                        setGroup: _parametrize(_put, _groupUrl),
+                        /**
+                         * Sets group state.
+                         */
+                        setGroupState: _parametrize(_put, function(id) {
+                            return _slash(_groupUrl(id), 'action');
+                        }),
+
+                        /* ================================================== */
+                        /* Schedules API                                      */
+                        /* ================================================== */
+
+                        /**
+                         * Gets schedules.
+                         */
+                        getSchedules: _get.bind(null, _schedulesUrl),
+                        /**
+                         * Creates a schedule.
+                         */
+                        createSchedule: _post.bind(null, _schedulesUrl),
+                        /**
+                         * Gets schedule attributes.
+                         */
+                        getSchedule: _parametrize(_get, _scheduleUrl),
+                        /**
+                         * Sets schedule attributes.
+                         */
+                        setSchedule: _parametrize(_put, _scheduleUrl),
+                        /**
+                         * Deletes a schedule.
+                         */
+                        deleteSchedule: _parametrize(_delete, _scheduleUrl)
                     };
                 }
             };
