@@ -47,13 +47,13 @@ the JSON serialization or deserialization. All API success and error results are
 returned in the success callback data. 
 
 Once you have a local bridge IP address, you can create a user on the bridge with
-a username:
+a username (we omit success and error callbacks below):
 
 ```
 var user = hue.bridge('192.168.1.2').user('foo');
 
 // create user account (requires link button to be pressed)
-user.create(...);
+user.create('foo application', ...);
 ```
 
 Once authenticated, you can do anything with the API, like turn on a light:
