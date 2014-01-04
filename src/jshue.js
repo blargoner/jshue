@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2013 John Peloquin. All rights reserved.
  */
 
-var jsHue = (function() {
+var jsHueAPI = function(XMLHttpRequest, JSON) {
     /**
      * Substitutes strings for URLs.
      */
@@ -248,5 +248,8 @@ var jsHue = (function() {
             };
         }
     };
+};
 
-}());
+if(typeof XMLHttpRequest !== 'undefined' && typeof JSON !== 'undefined') {
+    jsHue = jsHueAPI.bind(null, XMLHttpRequest, JSON);
+}
