@@ -64,3 +64,5 @@ user.setLightState(1, { on: true }, ...);
 
 For more details, see the source code. jsHue's object interface maps directy to
 the API, so it is very straightforward to use.
+
+Source code documentation can be compiled with YUIDoc.
