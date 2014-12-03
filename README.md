@@ -44,7 +44,8 @@ hue.discover(
 jsHue performs requests asynchronously and provides a callback interface. The
 failure callback is called if the XHR request fails, or if there is an error with
 the JSON serialization or deserialization. All API success and error results are
-returned in the success callback data. 
+returned in the success callback data. (This is because some API calls may return
+aggregated API success and error results.)
 
 Once you have a local bridge IP address, you can create a user on the bridge with
 a username (we omit success and error callbacks below):
@@ -64,5 +65,3 @@ user.setLightState(1, { on: true }, ...);
 
 For more details, see the source code. jsHue's object interface maps directy to
 the API, so it is very straightforward to use.
-
-Source code documentation can be compiled with YUIDoc.
