@@ -107,7 +107,7 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
             }
             catch(e) {
                 failure && failure({ type: 'json', message: e.message });
-                return;
+                return false;
             }
 
             success && success(data);
