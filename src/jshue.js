@@ -437,6 +437,16 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                          */
                         getGroups: _get.bind(null, _groupsUrl),
                         /**
+                         * Creates a group.
+                         *
+                         * @method createGroup
+                         * @param {Object} data group data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        createGroup: _post.bind(null, _groupsUrl),
+                        /**
                          * Gets group attributes.
                          *
                          * @method getGroup
@@ -470,6 +480,16 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                         setGroupState: _parametrize(_put, function(id) {
                             return _slash(_groupUrl(id), 'action');
                         }),
+                        /**
+                         * Deletes a group.
+                         *
+                         * @method deleteGroup
+                         * @param {Number} id group ID
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        deleteGroup: _parametrize(_delete, _groupUrl),
 
                         /* ================================================== */
                         /* Schedules API                                      */
