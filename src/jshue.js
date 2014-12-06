@@ -267,7 +267,8 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                         _configUrl = _slash(_userUrl, 'config'),
                         _lightsUrl = _slash(_userUrl, 'lights'),
                         _groupsUrl = _slash(_userUrl, 'groups'),
-                        _schedulesUrl = _slash(_userUrl, 'schedules');
+                        _schedulesUrl = _slash(_userUrl, 'schedules'),
+                        _scenesUrl = _slash(_userUrl, 'scenes');
 
                     var _objectUrl = function(baseUrl) {
                         return function(id) {
@@ -277,7 +278,8 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
 
                     var _lightUrl = _objectUrl(_lightsUrl),
                         _groupUrl = _objectUrl(_groupsUrl),
-                        _scheduleUrl = _objectUrl(_schedulesUrl);
+                        _scheduleUrl = _objectUrl(_schedulesUrl),
+                        _sceneUrl = _objectUrl(_scenesUrl);
 
                     return {
                         /* ================================================== */
@@ -522,7 +524,46 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                          * @param {Function} failure failure callback
                          * @return {Boolean} true if request was sent, false otherwise
                          */
-                        deleteSchedule: _parametrize(_delete, _scheduleUrl)
+                        deleteSchedule: _parametrize(_delete, _scheduleUrl),
+
+                        /* ================================================== */
+                        /* Scenes API                                         */
+                        /* ================================================== */
+
+                        /**
+                         * Gets scenes.
+                         *
+                         * @method getScenes
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getScenes: _get.bind(null, _scenesUrl),
+                        /**
+                         * Creates or updates a scene.
+                         *
+                         * @method setScene
+                         * @param {String} id scene ID
+                         * @param {Object} data scene data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        setScene: _parametrize(_put, _sceneUrl),
+                        /**
+                         * Modifies the state of a light in a scene.
+                         *
+                         * @method setSceneLightState
+                         * @param {String} sceneId scene ID
+                         * @param {Number} lightId light ID
+                         * @param {Object} data scene light state data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        setSceneLightState: function(sceneId, lightId, data, success, callback) {
+                            return _put(_slash(_sceneUrl(sceneId), 'lights', lightId, 'state'), data, success, callback);
+                        }
                     };
                 }
             };
