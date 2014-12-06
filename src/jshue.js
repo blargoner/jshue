@@ -263,6 +263,7 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                      * @class jsHueUser
                      */
                     var _userUrl = _slash(_bridgeUrl, username),
+                        _infoUrl = _slash(_userUrl, 'info'),
                         _configUrl = _slash(_userUrl, 'config'),
                         _lightsUrl = _slash(_userUrl, 'lights'),
                         _groupsUrl = _slash(_userUrl, 'groups'),
@@ -279,6 +280,20 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                         _scheduleUrl = _objectUrl(_schedulesUrl);
 
                     return {
+                        /* ================================================== */
+                        /* Info API                                           */
+                        /* ================================================== */
+
+                        /**
+                         * Gets bridge timezones.
+                         *
+                         * @method getTimezones
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getTimezones: _get.bind(null, _slash(_infoUrl, 'timezones')),
+
                         /* ================================================== */
                         /* Configuration API                                  */
                         /* ================================================== */
