@@ -268,7 +268,8 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                         _lightsUrl = _slash(_userUrl, 'lights'),
                         _groupsUrl = _slash(_userUrl, 'groups'),
                         _schedulesUrl = _slash(_userUrl, 'schedules'),
-                        _scenesUrl = _slash(_userUrl, 'scenes');
+                        _scenesUrl = _slash(_userUrl, 'scenes'),
+                        _sensorsUrl = _slash(_userUrl, 'sensors');
 
                     var _objectUrl = function(baseUrl) {
                         return function(id) {
@@ -279,7 +280,8 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                     var _lightUrl = _objectUrl(_lightsUrl),
                         _groupUrl = _objectUrl(_groupsUrl),
                         _scheduleUrl = _objectUrl(_schedulesUrl),
-                        _sceneUrl = _objectUrl(_scenesUrl);
+                        _sceneUrl = _objectUrl(_scenesUrl),
+                        _sensorUrl = _objectUrl(_sensorsUrl);
 
                     return {
                         /* ================================================== */
@@ -583,7 +585,108 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                          */
                         setSceneLightState: function(sceneId, lightId, data, success, callback) {
                             return _put(_slash(_sceneUrl(sceneId), 'lights', lightId, 'state'), data, success, callback);
-                        }
+                        },
+
+                        /* ================================================== */
+                        /* Sensors API                                        */
+                        /* ================================================== */
+ 
+                        /**
+                         * Gets sensors.
+                         *
+                         * @method getSensors
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getSensors: _get.bind(null, _sensorsUrl),
+                        /**
+                         * Creates a sensor.
+                         *
+                         * @method createSensor
+                         * @param {Object} data sensor data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        createSensor: _post.bind(null, _sensorsUrl),
+                        /**
+                         * Searches for new sensors.
+                         *
+                         * @method searchForNewSensors
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        searchForNewSensors: _post.bind(null, _sensorsUrl, null),
+                        /**
+                         * Gets new sensors since last search.
+                         *
+                         * @method getNewSensors
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getNewSensors: _get.bind(null, _slash(_sensorsUrl, 'new')),
+                        /**
+                         * Gets sensor attributes and state.
+                         *
+                         * @method getSensor
+                         * @param {Number} id sensor ID
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getSensor: _parametrize(_get, _sensorUrl),
+                        /**
+                         * Sets sensor attributes.
+                         *
+                         * @method setSensor
+                         * @param {Number} id sensor ID
+                         * @param {Object} data attribute data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        setSensor: _parametrize(_put, _sensorUrl),
+                        /**
+                         * Sets sensor configuration.
+                         *
+                         * @method setSensorConfig
+                         * @param {Number} id sensor ID
+                         * @param {Object} data config data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        setSensorConfig: _parametrize(_put, function(id) {
+                            return _slash(_sensorUrl(id), 'config');
+                        }),
+                        /**
+                         * Sets sensor state.
+                         *
+                         * @method setSensorState
+                         * @param {Number} id sensor ID
+                         * @param {Object} data state data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        setSensorState: _parametrize(_put, function(id) {
+                            return _slash(_sensorUrl(id), 'state');
+                        }),
+                        /**
+                         * Deletes a sensor.
+                         *
+                         * May not be supported by the bridge.
+                         *
+                         * @method deleteSensor
+                         * @param {Number} id sensor ID
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        deleteSensor: _parametrize(_delete, _sensorUrl)
                     };
                 }
             };
