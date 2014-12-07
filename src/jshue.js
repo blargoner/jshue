@@ -269,7 +269,8 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                         _groupsUrl = _slash(_userUrl, 'groups'),
                         _schedulesUrl = _slash(_userUrl, 'schedules'),
                         _scenesUrl = _slash(_userUrl, 'scenes'),
-                        _sensorsUrl = _slash(_userUrl, 'sensors');
+                        _sensorsUrl = _slash(_userUrl, 'sensors'),
+                        _rulesUrl = _slash(_userUrl, 'rules');
 
                     var _objectUrl = function(baseUrl) {
                         return function(id) {
@@ -281,7 +282,8 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                         _groupUrl = _objectUrl(_groupsUrl),
                         _scheduleUrl = _objectUrl(_schedulesUrl),
                         _sceneUrl = _objectUrl(_scenesUrl),
-                        _sensorUrl = _objectUrl(_sensorsUrl);
+                        _sensorUrl = _objectUrl(_sensorsUrl),
+                        _ruleUrl = _objectUrl(_rulesUrl);
 
                     return {
                         /* ================================================== */
@@ -686,7 +688,62 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                          * @param {Function} failure failure callback
                          * @return {Boolean} true if request was sent, false otherwise
                          */
-                        deleteSensor: _parametrize(_delete, _sensorUrl)
+                        deleteSensor: _parametrize(_delete, _sensorUrl),
+
+                        /* ================================================== */
+                        /* Rules API                                          */
+                        /* ================================================== */
+
+                        /**
+                         * Gets rules.
+                         *
+                         * @method getRules
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getRules: _get.bind(null, _rulesUrl),
+                        /**
+                         * Creates a rule.
+                         *
+                         * @method createRule
+                         * @param {Object} data rule data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        createRule: _post.bind(null, _rulesUrl),
+                        /**
+                         * Gets rule attributes.
+                         *
+                         * @method getRule
+                         * @param {Number} id rule ID
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        getRule: _parametrize(_get, _ruleUrl),
+                        /**
+                         * Sets rule attributes.
+                         *
+                         * @method setRule
+                         * @param {Number} id rule ID
+                         * @param {Object} data rule data
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        setRule: _parametrize(_put, _ruleUrl),
+                        /**
+                         * Deletes a rule.
+                         *
+                         * @method deleteRule
+                         * @param {Number} id rule ID
+                         * @param {Function} success success callback
+                         * @param {Function} failure failure callback
+                         * @return {Boolean} true if request was sent, false otherwise
+                         */
+                        deleteRule: _parametrize(_delete, _ruleUrl),
                     };
                 }
             };
