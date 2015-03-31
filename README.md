@@ -76,7 +76,3 @@ user.setLightState(1, { on: true }, ...);
 
 For more details, see the source code. jsHue's object interface maps directy to
 the API, so it is very straightforward to use.
-
-## Known Issues
-
-- As of 2015-03-28, bridge discovery using ```hue.discover()``` as above does not work due to a [bug](http://www.developers.meethue.com/content/n-upnp-url-redirect-breaks-bridge-discovery-existing-applications) with the Philips N-UPnP API. Philips indicates that this bug should be fixed very soon. As a temporary workaround, you can change the URL from `https://www.meethue.com/api/nupnp` to `https://client-eastwood-dot-hue-prod-us.appspot.com/api/nupnp` in the jsHue source code. Thanks to [@megabytemb](https://github.com/megabytemb) for [reporting this](https://github.com/blargoner/jshue/pull/10) to me.
