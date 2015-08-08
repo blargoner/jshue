@@ -28,7 +28,7 @@ The following Hue APIs are supported:
 
 To get started, instantiate jsHue:
 
-```
+```js
 var hue = jsHue();
 ```
 
