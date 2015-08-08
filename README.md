@@ -4,7 +4,7 @@ A simple JavaScript library for Philips Hue.
 
 Version 0.2.0.
 
-Copyright (c) 2014 John Peloquin. All rights reserved.
+Copyright (c) 2015 John Peloquin. All rights reserved.
 
 ## Introduction
 
@@ -34,7 +34,7 @@ var hue = jsHue();
 
 Then you can discover local bridges:
 
-```
+```js
 hue.discover(
     function(bridges) {
         if(bridges.length === 0) {
@@ -61,8 +61,8 @@ aggregated API success and error results.)
 Once you have a local bridge IP address, you can create a user on the bridge with
 a username (we omit success and error callbacks below):
 
-```
-var user = hue.bridge('192.168.1.2').user('foo');
+```js
+var user = hue.bridge('192.168.1.2').user('foousername');
 
 // create user account (requires link button to be pressed)
 user.create('foo application', ...);
@@ -70,7 +70,7 @@ user.create('foo application', ...);
 
 Once authenticated, you can do anything with the API, like turn on a light:
 
-```
+```js
 user.setLightState(1, { on: true }, ...);
 ```
 
