@@ -3,7 +3,7 @@
  * JavaScript library for Philips Hue.
  *
  * @module jshue
- * @version 0.2.0
+ * @version 0.3.0
  * @author John Peloquin
  * @copyright Copyright (c) 2013 John Peloquin. All rights reserved.
  */

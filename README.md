@@ -2,7 +2,7 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 0.2.0.
+Version 0.3.0.
 
 Copyright (c) 2015 John Peloquin. All rights reserved.
 
@@ -59,19 +59,27 @@ returned in the success callback data. (This is because some API calls may retur
 aggregated API success and error results.)
 
 Once you have a local bridge IP address, you can create a user on the bridge with
-a username (we omit success and error callbacks below):
+a bridge-generated username (we omit error callbacks below):
 
 ```js
-var user = hue.bridge('192.168.1.2').user('foousername');
+var bridge = hue.bridge('192.168.1.2');
 
 // create user account (requires link button to be pressed)
-user.create('foo application', ...);
+bridge.createUser('foo application', function(data) {
+    // extract bridge-generated username from returned data
+    var username = data[0].success.username;
+
+    console.log('New username:', username);
+
+    // instantiate user object with username
+    var user = bridge.user(username);
+});
 ```
 
 Once authenticated, you can do anything with the API, like turn on a light:
 
 ```js
-user.setLightState(1, { on: true }, ...);
+user.setLightState(1, { on: true }, function(data) { /* ... */ });
 ```
 
 For more details, see the source code. jsHue's object interface maps directy to
