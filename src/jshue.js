@@ -31,7 +31,7 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
      */
     var _sub = function(str, data) {
         return str.replace(/\{(\w+)\}/g, function(t, k) {
-            return data[k] ? data[k] : t;
+            return data[k] || t;
         });
     };
 
@@ -251,6 +251,22 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
              */
             var _bridgeUrl = _sub('http://{ip}/api', { ip: ip });
             return {
+                /**
+                 * Creates new user in bridge whitelist.
+                 *
+                 * @method createUser
+                 * @param {String} type device type
+                 * @param {Function} success success callback
+                 * @param {Function} failure failure callback
+                 * @return {Boolean} true if request was sent, false otherwise
+                 */
+                createUser: function(type, success, failure) {
+                    var data = {
+                        devicetype: type
+                    };
+                    return _post(_bridgeUrl, data, success, failure);
+                },
+
                 /**
                  * Creates user object (jsHueUser).
                  *
@@ -743,7 +759,7 @@ var jsHueAPI = function(XMLHttpRequest, JSON) {
                          * @param {Function} failure failure callback
                          * @return {Boolean} true if request was sent, false otherwise
                          */
-                        deleteRule: _parametrize(_delete, _ruleUrl),
+                        deleteRule: _parametrize(_delete, _ruleUrl)
                     };
                 }
             };
