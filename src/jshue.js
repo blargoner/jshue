@@ -2,8 +2,8 @@
  * jsHue
  * JavaScript library for Philips Hue.
  *
- * @module jshue
- * @version 0.3.0
+ * @module jshue-next
+ * @version 1.0.0
  * @author John Peloquin
  * @copyright Copyright (c) 2013 John Peloquin. All rights reserved.
  * @copyright Copyright (c) 2017 Tom Brewe (fetch API and promise changes)

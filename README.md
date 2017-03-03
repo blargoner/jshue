@@ -2,9 +2,10 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 0.3.0.
+Version 1.0.0
 
-Copyright (c) 2015 John Peloquin. All rights reserved.
+Copyright (c) 2015 John Peloquin (original code). All rights reserved.
+Copyright (c) 2017 Tom Brewe (fetch and Promise API changes)
 
 ## Introduction
 
@@ -35,37 +36,30 @@ var hue = jsHue();
 Then you can discover local bridges:
 
 ```js
-hue.discover(
-    function(bridges) {
-        if(bridges.length === 0) {
-            console.log('No bridges found. :(');
-        }
-        else {
-            bridges.forEach(function(b) {
-                console.log('Bridge found at IP address %s.', b.internalipaddress);
-            });
-        }
-    },
-    function(error) {
-        console.error(error.message);
+hue.discover().then(bridges => {
+    
+    if(bridges.length === 0) {
+        console.log('No bridges found. :(');
     }
-);
+    else {
+        bridges.forEach(function(b) {
+            console.log('Bridge found at IP address %s.', b.internalipaddress);
+        });
+    }
+    
+}
+).catch((err) => {console.log('Error finding bridges', err)});
 ```
 
-jsHue performs requests asynchronously and provides a callback interface. The
-failure callback is called if the XHR request fails, or if there is an error with
-the JSON serialization or deserialization. All API success and error results are
-returned in the success callback data. (This is because some API calls may return
-aggregated API success and error results.)
+jsHue-promise performs requests asynchronously and provides a Promise interface. You can `catch` errors as usual, like in the example below.
 
-Once you have a local bridge IP address, you can create a user on the bridge with
-a bridge-generated username (we omit error callbacks below):
+Once you have a local bridge IP address, you can create a user on the bridge with a bridge-generated username (we omit error callbacks below):
 
 ```js
 var bridge = hue.bridge('192.168.1.2');
 
 // create user account (requires link button to be pressed)
-bridge.createUser('foo application').then( data => {
+bridge.createUser('myApp#testdevice').then(data => {
     // extract bridge-generated username from returned data
     var username = data[0].success.username;
 
@@ -82,5 +76,4 @@ Once authenticated, you can do anything with the API, like turn on a light:
 user.setLightState(1, { on: true }).then( data => { /* ... */ });
 ```
 
-For more details, see the source code. jsHue's object interface maps directy to
-the API, so it is very straightforward to use.
+For more details, see the source code. jsHue's object interface maps direclty to the API, so it is very straightforward to use.
