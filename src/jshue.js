@@ -46,12 +46,11 @@ var jsHueAPI = function(fetch, JSON) {
      * @return {Boolean} true if request was sent, false otherwise
      */
     var _requestJson = function(method, url, data) {
-
         if(data !== null) {
             data = JSON.stringify(data);
         }
-
-        return fetch(url, {method, data}).then(blob => blob.json());
+        
+        return fetch(url, {method: method, body: data}).then(blob => blob.json());
         
     };
 

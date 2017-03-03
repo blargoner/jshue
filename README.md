@@ -65,7 +65,7 @@ a bridge-generated username (we omit error callbacks below):
 var bridge = hue.bridge('192.168.1.2');
 
 // create user account (requires link button to be pressed)
-bridge.createUser('foo application', function(data) {
+bridge.createUser('foo application').then( data => {
     // extract bridge-generated username from returned data
     var username = data[0].success.username;
 
@@ -79,7 +79,7 @@ bridge.createUser('foo application', function(data) {
 Once authenticated, you can do anything with the API, like turn on a light:
 
 ```js
-user.setLightState(1, { on: true }, function(data) { /* ... */ });
+user.setLightState(1, { on: true }).then( data => { /* ... */ });
 ```
 
 For more details, see the source code. jsHue's object interface maps directy to
