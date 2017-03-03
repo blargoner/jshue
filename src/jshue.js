@@ -6,6 +6,7 @@
  * @version 0.3.0
  * @author John Peloquin
  * @copyright Copyright (c) 2013 John Peloquin. All rights reserved.
+ * @copyright Copyright (c) 2017 Tom Brewe (fetch API and promise changes)
  */
 
 /**
@@ -18,22 +19,6 @@
  * @return {Object} instance
  */
 var jsHueAPI = function(fetch, JSON) {
-    /**
-     * Substitutes strings for URLs.
-     *
-     * Example: _sub('http://{host}/bar', { host: 'foo' }) returns 'http://foo/bar'.
-     *
-     * @method _sub
-     * @private
-     * @param {String} str input string
-     * @param {Object} data key/value substitutions
-     * @return {String} output string
-     */
-    var _sub = function(str, data) {
-        return str.replace(/\{(\w+)\}/g, function(t, k) {
-            return data[k] || t;
-        });
-    };
 
     /**
      * Concatenates strings for URLs.
@@ -181,7 +166,7 @@ var jsHueAPI = function(fetch, JSON) {
             /**
              * @class jsHueBridge
              */
-            var _bridgeUrl = _sub('http://{ip}/api', { ip: ip });
+            var _bridgeUrl = `http://${ip}/api`;
             return {
                 /**
                  * Creates new user in bridge whitelist.
