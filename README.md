@@ -72,6 +72,6 @@ Once authenticated, you can do anything with the API, like turn on a light:
 user.setLightState(1, { on: true }).then( data => { /* ... */ })
 ```
 
-For more details, see the source code. jsHue's object interface maps direclty to the API, so it is very straightforward to use.
+For more details, see the source code. jsHue's object interface maps directly to the API, so it is very straightforward to use.
 
-# Contributors
+## Contributors
