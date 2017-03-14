@@ -2,10 +2,9 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 1.0.0
+Version 0.3.0
 
-Copyright (c) 2015 John Peloquin (original code). All rights reserved.
-Copyright (c) 2017 Tom Brewe (fetch and Promise API changes)
+Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
 
 ## Introduction
 
@@ -37,7 +36,6 @@ Then you can discover local bridges:
 
 ```js
 hue.discover().then(bridges => {
-    
     if(bridges.length === 0) {
         console.log('No bridges found. :(');
     }
@@ -46,12 +44,10 @@ hue.discover().then(bridges => {
             console.log('Bridge found at IP address %s.', b.internalipaddress);
         });
     }
-    
-}
-).catch((err) => {console.log('Error finding bridges', err)});
+}).catch((e) => {console.log('Error finding bridges', e)});
 ```
 
-jsHue-promise performs requests asynchronously and provides a Promise interface. You can `catch` errors as usual, like in the example below.
+jsHue performs requests asynchronously and provides a Promise interface. Each promise results in Hue API success and error objects. Additionally, you can `catch` request and JSON serialization/deserialization errors at the end of the promise chain.
 
 Once you have a local bridge IP address, you can create a user on the bridge with a bridge-generated username (we omit error callbacks below):
 
@@ -73,7 +69,9 @@ bridge.createUser('myApp#testdevice').then(data => {
 Once authenticated, you can do anything with the API, like turn on a light:
 
 ```js
-user.setLightState(1, { on: true }).then( data => { /* ... */ });
+user.setLightState(1, { on: true }).then( data => { /* ... */ })
 ```
 
 For more details, see the source code. jsHue's object interface maps direclty to the API, so it is very straightforward to use.
+
+# Contributors

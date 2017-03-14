@@ -2,11 +2,10 @@
  * jsHue
  * JavaScript library for Philips Hue.
  *
- * @module jshue-next
+ * @module jshue
  * @version 1.0.0
  * @author John Peloquin
- * @copyright Copyright (c) 2013 John Peloquin. All rights reserved.
- * @copyright Copyright (c) 2017 Tom Brewe (fetch API and promise changes)
+ * Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
  */
 
 /**
@@ -43,15 +42,17 @@ var jsHueAPI = function(fetch, JSON) {
      * @param {String} method GET, PUT, POST, or DELETE
      * @param {String} url request URL
      * @param {Object} data request data object to serialize for request JSON
-     * @return {Boolean} true if request was sent, false otherwise
+     * @return {Promise} resolving to JSON response
      */
     var _requestJson = function(method, url, data) {
-        if(data !== null) {
-            data = JSON.stringify(data);
-        }
-        
-        return fetch(url, {method: method, body: data}).then(blob => blob.json());
-        
+        return new Promise(resolve => {
+            if(data !== null) {
+                data = JSON.stringify(data);
+            }
+            resolve(data);
+         })
+         .then(data => fetch(url, {method: method, body: data}))
+         .then(response => response.json());
     };
 
     /**
@@ -61,10 +62,10 @@ var jsHueAPI = function(fetch, JSON) {
      * @private
      * @param {String} method GET, PUT, POST, or DELETE
      * @param {String} url request URL
-     * @return {Boolean} true if request was sent, false otherwise
+     * @return {Promise}
      */
     var _requestJsonUrl = function(method, url) {
-        return _requestJson(method, url);
+        return _requestJson(method, url, null);
     };
 
     /**
@@ -73,7 +74,7 @@ var jsHueAPI = function(fetch, JSON) {
      * @method _get
      * @private
      * @param {String} url request URL
-     * @return {Boolean} true if request was sent, false otherwise
+     * @return {Promise}
      */
     var _get = _requestJsonUrl.bind(null, 'GET');
 
@@ -84,7 +85,7 @@ var jsHueAPI = function(fetch, JSON) {
      * @private
      * @param {String} url request URL
      * @param {Object} data request data object
-     * @return {Boolean} true if request was sent, false otherwise
+     * @return {Promise}
      */
     var _put = _requestJson.bind(null, 'PUT');
 
@@ -95,7 +96,7 @@ var jsHueAPI = function(fetch, JSON) {
      * @private
      * @param {String} url request URL
      * @param {Object} data request data object
-     * @return {Boolean} true if request was sent, false otherwise
+     * @return {Promise}
      */
     var _post = _requestJson.bind(null, 'POST');
 
@@ -105,7 +106,7 @@ var jsHueAPI = function(fetch, JSON) {
      * @method _delete
      * @private
      * @param {String} url request URL
-     * @return {Boolean} true if request was sent, false otherwise
+     * @return {Promise}
      */
     var _delete = _requestJsonUrl.bind(null, 'DELETE');
 
