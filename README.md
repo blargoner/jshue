@@ -2,7 +2,7 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 0.3.0
+Version 1.0.0
 
 Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
 
