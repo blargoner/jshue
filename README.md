@@ -2,16 +2,16 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 0.3.0.
+Version 1.0.0
 
-Copyright (c) 2015 John Peloquin. All rights reserved.
+Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
 
 ## Introduction
 
 jsHue is a simple JavaScript wrapper library for the Philips Hue API with a sane
 object interface and without unnecessary dependencies. It is primarily intended
-for use in modern web browsers supporting XHR and JSON, but with injection of
-suitable dependencies it could also be used in other environments like Node.js.
+for use in modern web browsers, but with injection of suitable dependencies it
+could also be used in other environments.
 
 The following Hue APIs are supported:
 - Bridge discovery
@@ -24,6 +24,9 @@ The following Hue APIs are supported:
 - Configuration
 - Info
 
+jsHue uses ES6, JSON, promises, and the fetch API. (If you need to run jsHue in
+an older environment, consider v0.3.0.)
+
 ## Getting Started
 
 To get started, instantiate jsHue:
@@ -35,37 +38,30 @@ var hue = jsHue();
 Then you can discover local bridges:
 
 ```js
-hue.discover(
-    function(bridges) {
-        if(bridges.length === 0) {
-            console.log('No bridges found. :(');
-        }
-        else {
-            bridges.forEach(function(b) {
-                console.log('Bridge found at IP address %s.', b.internalipaddress);
-            });
-        }
-    },
-    function(error) {
-        console.error(error.message);
+hue.discover().then(bridges => {
+    if(bridges.length === 0) {
+        console.log('No bridges found. :(');
     }
-);
+    else {
+        bridges.forEach(b => console.log('Bridge found at IP address %s.', b.internalipaddress));
+    }
+}).catch(e => console.log('Error finding bridges', e));
 ```
 
-jsHue performs requests asynchronously and provides a callback interface. The
-failure callback is called if the XHR request fails, or if there is an error with
-the JSON serialization or deserialization. All API success and error results are
-returned in the success callback data. (This is because some API calls may return
-aggregated API success and error results.)
+jsHue performs requests asynchronously and provides a promise interface. A promise
+is resolved with the API response data (API success or error), and is rejected if
+the request fails or there is an error with JSON serialization/deserialization.
+Note API response data may contain a mixture of API success and error responses
+from the bridge. You are responsible for handling any errors.
 
 Once you have a local bridge IP address, you can create a user on the bridge with
-a bridge-generated username (we omit error callbacks below):
+a bridge-generated username (we omit error handling below):
 
 ```js
 var bridge = hue.bridge('192.168.1.2');
 
 // create user account (requires link button to be pressed)
-bridge.createUser('foo application', function(data) {
+bridge.createUser('myApp#testdevice').then(data => {
     // extract bridge-generated username from returned data
     var username = data[0].success.username;
 
@@ -79,8 +75,15 @@ bridge.createUser('foo application', function(data) {
 Once authenticated, you can do anything with the API, like turn on a light:
 
 ```js
-user.setLightState(1, { on: true }, function(data) { /* ... */ });
+user.setLightState(1, { on: true }).then(data => {
+    // process response data, do other things
+});
 ```
 
-For more details, see the source code. jsHue's object interface maps directy to
+For more details, see the source code. jsHue's object interface maps directly to
 the API, so it is very straightforward to use.
+
+## Contributors
+
+- John Peloquin
+- Tom Brewe
