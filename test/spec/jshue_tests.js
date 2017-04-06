@@ -129,6 +129,19 @@ describe('jsHue', () => {
                     });
                 });
 
+                it('searches for new lights with data', done => {
+                    var body = {"deviceid":["45AF34","543636","34AFBE"]},
+                        response = [{"success": { "/lights": "Searching for new devices" }}],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.searchForNewLights(body).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(LIGHTS_URL, { method: 'POST', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
                 it('gets new lights', done => {
                     var response = {
                             "7": {"name": "Hue Lamp 7"},
@@ -216,6 +229,19 @@ describe('jsHue', () => {
 
                     user.setLightState(id, body).then(data => {
                         expect(fetch).toHaveBeenCalledWith(`${LIGHTS_URL}/${id}/state`, { method: 'PUT', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('deletes a light', done => {
+                    var id = 1,
+                        response = [{"success": "/lights/1 deleted."}],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.deleteLight(id).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${LIGHTS_URL}/${id}`, { method: 'DELETE', body: null });
                         expect(data).toEqual(response);
                         done();
                     });
@@ -556,6 +582,49 @@ describe('jsHue', () => {
                     });
                 });
 
+                it('creates a scene', done => {
+                    var body = {"name":"Romantic dinner", "lights":["1","2"], "recycle":true},
+                        response = [{"success": {"id": "Abc123Def456Ghi"}}],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.createScene(body).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(SCENES_URL, { method: 'POST', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('gets scene attributes', done => {
+                    var id = '74bc26d5f-on-0',
+                        response = {
+                            "name": "Cozy dinner",
+                            "lights": ["1"],
+                            "owner": "83b7780291a6ceffbe0bd049104df",
+                            "recycle": true,
+                            "locked": false,
+                            "appdata": {},
+                            "picture": "",
+                            "lastupdated": "2015-12-03T10:09:22",
+                            "version": 2,
+                            "lightstates": {
+                                "1": {
+                                    "on": true,
+                                    "bri": 237,
+                                    "xy": [0.5806, 0.3903]
+                                }
+                            }
+                        },
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.getScene(id).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${SCENES_URL}/${id}`, { method: 'GET', body: null });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
                 it('sets scene attributes', done => {
                     var id = '74bc26d5f-on-0',
                         body = {"name":"Cozy dinner", "lights":["3","2"], "storelightstate": true},
@@ -569,6 +638,37 @@ describe('jsHue', () => {
 
                     user.setScene(id, body).then(data => {
                         expect(fetch).toHaveBeenCalledWith(`${SCENES_URL}/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('sets scene light states', done => {
+                    var sceneId = 'ab341ef24',
+                        lightId = 1,
+                        body = {"on":true,"ct":200},
+                        response = [
+                          {"success":{"address":"/scenes/ab341ef24/lights/1/state/on", "value":true}},
+                          {"success":{"address":"/scenes/ab341ef24/lights/1/state/ct", "value":200}}
+                        ],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.setSceneLightState(sceneId, lightId, body).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${SCENES_URL}/${sceneId}/lightstates/${lightId}`, { method: 'PUT', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('deletes a scene', done => {
+                    var id = '3T2SvsxvwteNNys',
+                        response = [{"success":"/scenes/3T2SvsxvwteNNys deleted"}],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.deleteScene(id).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${SCENES_URL}/${id}`, { method: 'DELETE', body: null });
                         expect(data).toEqual(response);
                         done();
                     });
@@ -1138,24 +1238,176 @@ describe('jsHue', () => {
                 });
             });
 
+            describe('resourcelinks API', () => {
+                const LINKS_URL = `${USER_URL}/resourcelinks`;
+
+                it('gets all resourcelinks', done => {
+                    var response = {
+                            "1": {
+                                "name": "Sunrise",
+                                "description": "Carla's wakeup experience",
+                                "class": 1,
+                                "owner": "83b7780291a6ceffbe0bd049104df",
+                                "links": ["/schedules/2", "/schedules/3",
+                                          "/scenes/ABCD", "/scenes/EFGH", "/groups/8"]
+                            }
+                        },
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.getResourceLinks().then(data => {
+                        expect(fetch).toHaveBeenCalledWith(LINKS_URL, { method: 'GET', body: null });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('creates a resourcelink', done => {
+                    var body = {
+                            "name": "Sunrise",
+                            "description": "Carla's wakeup experience",
+                            "type":"Link",
+                            "class": 1,
+                            "owner": "83b7780291a6ceffbe0bd049104df",
+                            "links": ["/schedules/2", "/schedules/3",
+                                      "/scenes/ABCD", "/scenes/EFGH", "/groups/8"]
+                        },
+                        response = [{"success":{"id": "3"}}],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.createResourceLink(body).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(LINKS_URL, { method: 'POST', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('gets resourcelink attributes', done => {
+                    var id = 1,
+                        response = {
+                            "name": "Sunrise",
+                            "description": "Carla's wakeup experience",
+                            "type":"Link",
+                            "class": 1,
+                            "owner": "83b7780291a6ceffbe0bd049104df",
+                            "links": ["/schedules/2", "/schedules/3",
+                                      "/scenes/ABCD", "/scences/EFGH", "/groups/8"]
+                        },
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.getResourceLink(id).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${LINKS_URL}/${id}`, { method: 'GET', body: null });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('sets resourcelink attributes', done => {
+                    var id = 1,
+                        body = {
+                            "name": "Sunrise",
+                            "description": "Carla's wakeup experience",
+                        },
+                        response = [
+                            {"success": {"/resourcelinks/1/name": "Sunrise"}},
+                            {"success": {"/resourcelinks/1/description": "Carla's wakeup experience"}}
+                        ],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.setResourceLink(id, body).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${LINKS_URL}/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('deletes a resourcelink', done => {
+                    var id = 1,
+                        response = [{"success": "/resourcelinks/1 deleted."}],
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.deleteResourceLink(id).then(data => {
+                        expect(fetch).toHaveBeenCalledWith(`${LINKS_URL}/${id}`, { method: 'DELETE', body: null });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+            });
+
+            describe('capabilities API', () => {
+                const CAPABILITIES_URL = `${USER_URL}/capabilities`;
+
+                it('gets all capabilities', done => {
+                    var response = {
+                            "lights":{
+                                "available": 10,
+                            },
+                            "sensors":{
+                                "availble": 60,
+                                "clip": {
+                                    "available": 60,
+                                },
+                                "zll": {
+                                    "available": 60,
+                                },
+                                "zgp": {
+                                    "available": 60
+                                }
+                            },
+                            "groups": {},
+                            "scenes": {
+                                "available": 100,
+                                "lightstates": {
+                                    "available": 1500
+                                }
+                            },
+                            "rules": {},
+                            "schedules": {},
+                            "resourcelinks": {},
+                            "whitelists": {},
+                            "timezones": {
+                                "values":[
+                                    "Africa/Abidjan",
+                                    "Africa/Accra",
+                                     "Pacific/Wallis",
+                                     "US/Pacific-New"
+                                 ]
+                            }
+                        },
+                        fetch = fetchSpy(response),
+                        user = jsHueUser(fetch);
+
+                    user.getCapabilities().then(data => {
+                        expect(fetch).toHaveBeenCalledWith(CAPABILITIES_URL, { method: 'GET', body: null });
+                        expect(data).toEqual(response);
+                        done();
+                    });
+                });
+            });
+
             describe('error handling', () => {
                 it('propagates fetch errors through the promise chain', done => {
                     var message = 'fetch error',
                         fetch = fetchSpy({}).and.callFake(() => { throw new Error(message); }),
                         user = jsHueUser(fetch);
 
-                    expect(() => user.getFullState()).not.toThrow();
-
-                    user.getFullState().then(
-                        () => {
-                            fail('This should not be called');
-                            done();
-                        },
-                        e => {
-                            expect(e.message).toBe(message);
-                            done();
-                        }
-                    );
+                    expect(() => {
+                        user.getFullState().then(
+                            () => {
+                                fail('This should not be called');
+                                done();
+                            },
+                            e => {
+                                expect(e).toEqual(jasmine.any(Error));
+                                expect(e.message).toBe(message);
+                                done();
+                            }
+                        );
+                    }).not.toThrow();
                 });
 
                 it('propagates json serialization errors through the promise chain', done => {
@@ -1165,36 +1417,36 @@ describe('jsHue', () => {
                     var fetch = fetchSpy({}),
                         user = jsHueUser(fetch);
 
-                    expect(() => user.setLight(1, circular)).not.toThrow();
-
-                    user.setLight(1, circular).then(
-                        () => {
-                            fail('This should not be called');
-                            done();
-                        },
-                        e => {
-                            expect(e).toEqual(jasmine.any(Error));
-                            done();
-                        }
-                    );
+                    expect(() => {
+                        user.setLight(1, circular).then(
+                            () => {
+                                fail('This should not be called');
+                                done();
+                            },
+                            e => {
+                                expect(e).toEqual(jasmine.any(Error));
+                                done();
+                            }
+                        );
+                    }).not.toThrow();
                 });
 
                 it('propagates json deserialization errors through the promise chain', done => {
                     var fetch = fetchSpy({}).and.callFake(() => Promise.resolve(new Response('{'))),
                         user = jsHueUser(fetch);
 
-                    expect(() => user.getFullState()).not.toThrow();
-
-                    user.getFullState().then(
-                        () => {
-                            fail('This should not be called');
-                            done();
-                        },
-                        e => {
-                            expect(e).toEqual(jasmine.any(Error));
-                            done();
-                        }
-                    );
+                    expect(() => {
+                        user.getFullState().then(
+                            () => {
+                                fail('This should not be called');
+                                done();
+                            },
+                            e => {
+                                expect(e).toEqual(jasmine.any(Error));
+                                done();
+                            }
+                        );
+                    }).not.toThrow();
                 });
             });
         });

@@ -3,7 +3,7 @@
  * JavaScript library for Philips Hue.
  *
  * @module jshue
- * @version 1.0.0
+ * @version 2.0.0
  * @author John Peloquin
  * @copyright Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
  */
@@ -140,7 +140,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
          * @param {String} ip ip address or hostname of bridge
          * @return {Object} bridge object
          */
-        bridge: (ip) => {
+        bridge: ip => {
             /**
              * @class jsHueBridge
              */
@@ -153,7 +153,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                  * @param {String} type device type
                  * @return {Promise} promise resolving to response data object
                  */
-                createUser: (type) => _post(_bridgeUrl, { devicetype: type }),
+                createUser: type => _post(_bridgeUrl, { devicetype: type }),
                 /**
                  * Creates user object (jsHueUser).
                  *
@@ -161,60 +161,48 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                  * @param {String} username username
                  * @return {Object} user object
                  */
-                user: (username) => {
+                user: username => {
                     /**
                      * @class jsHueUser
                      */
                     var _userUrl = `${_bridgeUrl}/${username}`,
-                        _infoUrl = `${_userUrl}/info`,
+                        _capabilitiesUrl = `${_userUrl}/capabilities`,
                         _configUrl = `${_userUrl}/config`,
                         _lightsUrl = `${_userUrl}/lights`,
                         _groupsUrl = `${_userUrl}/groups`,
                         _schedulesUrl = `${_userUrl}/schedules`,
                         _scenesUrl = `${_userUrl}/scenes`,
                         _sensorsUrl = `${_userUrl}/sensors`,
-                        _rulesUrl = `${_userUrl}/rules`;
+                        _rulesUrl = `${_userUrl}/rules`,
+                        _linksUrl = `${_userUrl}/resourcelinks`;
 
-                    var _objectUrl = (baseUrl) => (id) => `${baseUrl}/${id}`;
+                    var _objectUrl = baseUrl => id => `${baseUrl}/${id}`;
 
                     var _lightUrl = _objectUrl(_lightsUrl),
                         _groupUrl = _objectUrl(_groupsUrl),
                         _scheduleUrl = _objectUrl(_schedulesUrl),
                         _sceneUrl = _objectUrl(_scenesUrl),
                         _sensorUrl = _objectUrl(_sensorsUrl),
-                        _ruleUrl = _objectUrl(_rulesUrl);
+                        _ruleUrl = _objectUrl(_rulesUrl),
+                        _linkUrl = _objectUrl(_linksUrl);
 
                     return {
                         /* ================================================== */
-                        /* Info API                                           */
+                        /* Capabilities API                                   */
                         /* ================================================== */
 
                         /**
-                         * Gets bridge timezones.
+                         * Gets bridge capabilities.
                          *
-                         * @method getTimezones
+                         * @method getCapabilities
                          * @return {Promise} promise resolving to response data object
                          */
-                        getTimezones: _get.bind(null, `${_infoUrl}/timezones`),
+                        getCapabilities: _get.bind(null, _capabilitiesUrl),
 
                         /* ================================================== */
                         /* Configuration API                                  */
                         /* ================================================== */
 
-                        /**
-                         * Creates current user in bridge whitelist (deprecated).
-                         *
-                         * @method create
-                         * @param {String} type device type
-                         * @return {Promise} promise resolving to response data object
-                         */
-                        create: (type) => {
-                            var data = {
-                                username: username,
-                                devicetype: type
-                            };
-                            return _post(_bridgeUrl, data);
-                        },
                         /**
                          * Deletes user from bridge whitelist.
                          *
@@ -222,7 +210,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {String} username username
                          * @return {Promise} promise resolving to response data object
                          */
-                        deleteUser: _parametrize(_delete, (username) => `${_configUrl}/whitelist/${username}`),
+                        deleteUser: _parametrize(_delete, username => `${_configUrl}/whitelist/${username}`),
                         /**
                          * Gets bridge configuration.
                          *
@@ -268,9 +256,10 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * Searches for new lights.
                          *
                          * @method searchForNewLights
+                         * @param {Object} data data (optional)
                          * @return {Promise} promise resolving to response data object
                          */
-                        searchForNewLights: _post.bind(null, _lightsUrl, null),
+                        searchForNewLights: (data = null) => _post(_lightsUrl, data),
                         /**
                          * Gets light attributes and state.
                          *
@@ -296,7 +285,15 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {Object} data state data
                          * @return {Promise} promise resolving to response data object
                          */
-                        setLightState: _parametrize(_put, (id) => `${_lightUrl(id)}/state`),
+                        setLightState: _parametrize(_put, id => `${_lightUrl(id)}/state`),
+                        /**
+                         * Deletes a light.
+                         *
+                         * @method deleteLight
+                         * @param {Number} id light ID
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        deleteLight: _parametrize(_delete, _lightUrl),
 
                         /* ================================================== */
                         /* Groups API                                         */
@@ -342,7 +339,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {Object} data state data
                          * @return {Promise} promise resolving to response data object
                          */
-                        setGroupState: _parametrize(_put, (id) => `${_groupUrl(id)}/action`),
+                        setGroupState: _parametrize(_put, id => `${_groupUrl(id)}/action`),
                         /**
                          * Deletes a group.
                          *
@@ -409,7 +406,23 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          */
                         getScenes: _get.bind(null, _scenesUrl),
                         /**
-                         * Creates or updates a scene.
+                         * Creates a scene.
+                         *
+                         * @method createScene
+                         * @param {Object} data scene data
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        createScene: _post.bind(null, _scenesUrl),
+                        /**
+                         * Gets scene attributes.
+                         *
+                         * @method getScene
+                         * @param {String} id scene ID
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        getScene: _parametrize(_get, _sceneUrl),
+                        /**
+                         * Sets scene attributes.
                          *
                          * @method setScene
                          * @param {String} id scene ID
@@ -418,7 +431,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          */
                         setScene: _parametrize(_put, _sceneUrl),
                         /**
-                         * Modifies the state of a light in a scene.
+                         * Sets the state of a light in a scene.
                          *
                          * @method setSceneLightState
                          * @param {String} sceneId scene ID
@@ -426,8 +439,16 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {Object} data scene light state data
                          * @return {Promise} promise resolving to response data object
                          */
-                        setSceneLightState: (sceneId, lightId, data, success, callback) =>
-                            _put(`${_sceneUrl(sceneId)}/lights/${lightId}/state`, data, success, callback),
+                        setSceneLightState: (sceneId, lightId, data) =>
+                            _put(`${_sceneUrl(sceneId)}/lightstates/${lightId}`, data),
+                        /**
+                         * Deletes a scene.
+                         *
+                         * @method deleteScene
+                         * @param {String} id scene ID
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        deleteScene: _parametrize(_delete, _sceneUrl),
 
                         /* ================================================== */
                         /* Sensors API                                        */
@@ -487,7 +508,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {Object} data config data
                          * @return {Promise} promise resolving to response data object
                          */
-                        setSensorConfig: _parametrize(_put, (id) => `${_sensorUrl(id)}/config`),
+                        setSensorConfig: _parametrize(_put, id => `${_sensorUrl(id)}/config`),
                         /**
                          * Sets sensor state.
                          *
@@ -496,7 +517,7 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {Object} data state data
                          * @return {Promise} promise resolving to response data object
                          */
-                        setSensorState: _parametrize(_put, (id) => `${_sensorUrl(id)}/state`),
+                        setSensorState: _parametrize(_put, id => `${_sensorUrl(id)}/state`),
                         /**
                          * Deletes a sensor.
                          *
@@ -551,7 +572,52 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @param {Number} id rule ID
                          * @return {Promise} promise resolving to response data object
                          */
-                        deleteRule: _parametrize(_delete, _ruleUrl)
+                        deleteRule: _parametrize(_delete, _ruleUrl),
+
+                        /* ================================================== */
+                        /* Resourcelinks API                                  */
+                        /* ================================================== */
+
+                        /**
+                         * Gets all resourcelinks.
+                         *
+                         * @method getResourceLinks
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        getResourceLinks: _get.bind(null, _linksUrl),
+                        /**
+                         * Creates a resourcelink.
+                         *
+                         * @method createResourceLink
+                         * @param {Object} data resourcelink data
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        createResourceLink: _post.bind(null, _linksUrl),
+                        /**
+                         * Gets resourcelink attributes.
+                         *
+                         * @method getResourceLink
+                         * @param {Number} id resourcelink ID
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        getResourceLink: _parametrize(_get, _linkUrl),
+                        /**
+                         * Sets resourcelink attributes.
+                         *
+                         * @method setResourceLink
+                         * @param {Number} id resourcelink ID
+                         * @param {Object} data resourcelink data
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        setResourceLink: _parametrize(_put, _linkUrl),
+                        /**
+                         * Deletes a resourcelink.
+                         *
+                         * @method deleteResourceLink
+                         * @param {Number} id resourcelink ID
+                         * @return {Promise} promise resolving to response data object
+                         */
+                        deleteResourceLink: _parametrize(_delete, _linkUrl)
                     };
                 }
             };

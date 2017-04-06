@@ -2,7 +2,7 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 1.0.0
+Version 2.0.0
 
 Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
 
@@ -13,7 +13,7 @@ object interface and without unnecessary dependencies. It is primarily intended
 for use in modern web browsers, but with injection of suitable dependencies it
 could also be used in other environments.
 
-The following Hue APIs are supported:
+The following Hue APIs are supported (v1.17):
 - Bridge discovery
 - Lights
 - Groups
@@ -22,7 +22,8 @@ The following Hue APIs are supported:
 - Sensors
 - Rules
 - Configuration
-- Info
+- Resourcelinks
+- Capabilities
 
 jsHue uses ES6, JSON, promises, and the fetch API. (If you need to run jsHue in
 an older environment, consider v0.3.0.)
