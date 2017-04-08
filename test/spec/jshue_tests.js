@@ -1,6 +1,6 @@
 describe('jsHue', () => {
 
-    var jsHue = fetch => jsHueAPI(fetch, JSON, Promise);
+    var jsHue = fetch => jsHueAPI(fetch, Response, JSON, Promise);
 
     var fetchSpy = response => jasmine.createSpy('fetch', fetch)
                                     .and.callFake(() => Promise.resolve(new Response(JSON.stringify(response))));
@@ -539,6 +539,22 @@ describe('jsHue', () => {
                         done();
                     });
                 });
+
+                it('generates commands for schedules', done => {
+                    var lightId = 1,
+                        lightState = { on: true },
+                        user = jsHueUser(fetch),
+                        commands = user.scheduleCommandGenerator();
+
+                    commands.setLightState(lightId, lightState).then(command => {
+                        expect(command).toEqual({
+                            address: `/api/${USER}/lights/${lightId}/state`,
+                            method: 'PUT',
+                            body: lightState
+                        });
+                        done();
+                    });
+                });
             });
 
             describe('scenes API', () => {
@@ -1007,6 +1023,22 @@ describe('jsHue', () => {
                     user.deleteRule(id).then(data => {
                         expect(fetch).toHaveBeenCalledWith(`${RULES_URL}/${id}`, { method: 'DELETE', body: null });
                         expect(data).toEqual(response);
+                        done();
+                    });
+                });
+
+                it('generates actions for rules', done => {
+                    var lightId = 1,
+                        lightState = { on: true },
+                        user = jsHueUser(fetch),
+                        actions = user.ruleActionGenerator();
+
+                    actions.setLightState(lightId, lightState).then(action => {
+                        expect(action).toEqual({
+                            address: `/lights/${lightId}/state`,
+                            method: 'PUT',
+                            body: lightState
+                        });
                         done();
                     });
                 });

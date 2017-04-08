@@ -84,6 +84,58 @@ user.setLightState(1, { on: true }).then(data => {
 For more details, see the source code. jsHue's object interface maps directly to
 the API, so it is very straightforward to use.
 
+## Experimental features
+These features may be changed or removed entirely.
+
+### Schedule command generator
+jsHue provides a command generator which simplifies the creation of schedules.
+The generator exposes the same interface as the user object above, but when an
+API method is called no request is made to the bridge and the returned promise
+resolves to an object describing the API request itself, suitable for use as
+the command in a schedule.
+
+For example, you can turn on light 1 at a specific time as follows:
+
+```js
+var user = jsHue().bridge('192.168.1.1').user('myUser'),
+    generateCommand = user.scheduleCommandGenerator();
+
+generateCommand.setLightState(1, { on: true })
+    .then(command => user.createSchedule({
+        name: 'My schedule',
+        localtime: '2017-04-08T01:00:00',
+        command
+    }));
+```
+
+### Rule action generator
+Similarly, there is an action generator which simplifies the creation of rules.
+
+For example, you can turn on lights 1 and 2 at sunrise as follows:
+
+```js
+var user = jsHue().bridge('192.168.1.1').user('myUser'),
+    generateAction = user.ruleActionGenerator();
+
+Promise.all([
+    generateAction.setLightState(1, { on: true }),
+    generateAction.setLightState(2, { on: true })
+]).then(actions => user.createRule({
+    name: 'My rule',
+    conditions: [{
+        address: '/sensors/1/state/daylight',
+        operator: 'eq',
+        value: 'true'
+    }],
+    actions
+}));
+```
+
+These features are considered experimental because the implementation is hacky.
+There is nothing asynchronous about command or rule generation so promises are
+unnecessary in principle; however, they made implementation trivial by allowing
+reuse of an existing interface.
+
 ## Contributors
 
 - John Peloquin

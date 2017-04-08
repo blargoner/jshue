@@ -14,11 +14,12 @@
  * @class jsHueAPI
  * @constructor
  * @param {Function} fetch fetch dependency
+ * @param {Function} Response response dependency
  * @param {Object} JSON JSON dependency
  * @param {Function} Promise promise dependency
  * @return {Object} instance
  */
-var jsHueAPI = (fetch, JSON, Promise) => {
+var jsHueAPI = (fetch, Response, JSON, Promise) => {
     /**
      * Performs fetch request.
      *
@@ -121,6 +122,23 @@ var jsHueAPI = (fetch, JSON, Promise) => {
      */
     var _parametrize = (method, url) => (p, ...rest) => method(url(p), ...rest);
 
+    /**
+     * Creates an echo.
+     *
+     * The returned function acts as a fetch implementation which just echoes back
+     * the request. This is used for schedule command and rule action generation.
+     *
+     * @method _echo
+     * @private
+     * @param {String} baseUrl base URL to strip out
+     * @return {Function} echo fetch implementation
+     */
+    var _echo = baseUrl => (url, data) => Promise.resolve(new Response(JSON.stringify({
+        address: url.slice(baseUrl.length),
+        method: data.method,
+        body: JSON.parse(data.body)
+    })));
+
     return {
         /* ================================================== */
         /* Portal API                                         */
@@ -144,7 +162,9 @@ var jsHueAPI = (fetch, JSON, Promise) => {
             /**
              * @class jsHueBridge
              */
-            var _bridgeUrl = `http://${ip}/api`;
+            var _baseUrl = `http://${ip}`,
+                _bridgeUrl = `${_baseUrl}/api`;
+
             return {
                 /**
                  * Creates new user in bridge whitelist.
@@ -393,6 +413,15 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @return {Promise} promise resolving to response data object
                          */
                         deleteSchedule: _parametrize(_delete, _scheduleUrl),
+                        /**
+                         * Creates schedule command generator object.
+                         *
+                         * @experimental
+                         * @method scheduleCommandGenerator
+                         * @return {Object} schedule command generator
+                         */
+                        scheduleCommandGenerator: () =>
+                            jsHueAPI(_echo(_baseUrl), Response, JSON, Promise).bridge(ip).user(username),
 
                         /* ================================================== */
                         /* Scenes API                                         */
@@ -573,6 +602,15 @@ var jsHueAPI = (fetch, JSON, Promise) => {
                          * @return {Promise} promise resolving to response data object
                          */
                         deleteRule: _parametrize(_delete, _ruleUrl),
+                        /**
+                         * Creates rule action generator object.
+                         *
+                         * @experimental
+                         * @method ruleActionGenerator
+                         * @return {Object} rule action generator object
+                         */
+                        ruleActionGenerator: () =>
+                            jsHueAPI(_echo(_userUrl), Response, JSON, Promise).bridge(ip).user(username),
 
                         /* ================================================== */
                         /* Resourcelinks API                                  */
@@ -625,7 +663,8 @@ var jsHueAPI = (fetch, JSON, Promise) => {
     };
 };
 
-if(typeof fetch !== 'undefined' && typeof JSON !== 'undefined' && typeof Promise !== 'undefined') {
+if(typeof fetch !== 'undefined' && typeof Response !== 'undefined'
+    && typeof JSON !== 'undefined' && typeof Promise !== 'undefined') {
     /**
      * jsHue class.
      *
@@ -634,5 +673,5 @@ if(typeof fetch !== 'undefined' && typeof JSON !== 'undefined' && typeof Promise
      * @constructor
      * @return {Object} instance
      */
-    var jsHue = jsHueAPI.bind(null, fetch, JSON, Promise);
+    var jsHue = jsHueAPI.bind(null, fetch, Response, JSON, Promise);
 }
