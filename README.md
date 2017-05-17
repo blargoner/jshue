@@ -73,10 +73,14 @@ bridge.createUser('myApp#testdevice').then(data => {
 });
 ```
 
-Once authenticated, you can do anything with the API, like turn on a light:
+Once authenticated, you can do anything with the API, like turn on a light or setting the color:
 
 ```js
 user.setLightState(1, { on: true }).then(data => {
+    // process response data, do other things
+});
+
+user.setLightState(3, { bri: 128, hue: Math.round(Math.random() * 65000) }).then(data => {
     // process response data, do other things
 });
 ```
