@@ -81,7 +81,8 @@ user.setLightState(1, { on: true }).then(data => {
 });
 ```
 
-or setting the color:
+Or set the color:
+
 ```js
 user.setLightState(3, { bri: 128, hue: Math.round(Math.random() * 65000) }).then(data => {
     // process response data, do other things
