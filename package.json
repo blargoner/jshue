@@ -1,0 +1,24 @@
+{
+  "name": "jshue",
+  "version": "2.0.0",
+  "description": "A simple JavaScript library for Philips Hue",
+  "main": "src/jshue.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blargoner/jshue.git"
+  },
+  "keywords": [
+    "philips",
+    "hue"
+  ],
+  "author": "John Peloquin",
+  "contributors": [
+    "John Peloquin",
+    "Tom Brewe"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/blargoner/jshue/issues"
+  },
+  "homepage": "https://github.com/blargoner/jshue#readme"
+}
