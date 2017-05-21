@@ -30,11 +30,34 @@ an older environment, consider v0.3.0.)
 
 ## Getting Started
 
-To get started, instantiate jsHue:
 
+[Download jshue](https://github.com/nylki/jshue/releases) and include it in your html:
+
+```js
+<script src="path/to/jshue.js"></script>
+```
+
+then instantiate jsHue in your code:
 ```js
 var hue = jsHue();
 ```
+
+
+Alternatively, if you use yarn or npm with a bundler like webpack or rollup (note: jshue is supposed to be used in a browser context):
+<details>
+<summary>npm install --save jshue</summary>
+
+```.js
+npm install --save jshue //or: yarn add jshue
+```
+
+then:
+```js
+jsHue = require('jsHue'); // or: import jsHue from 'jsHue';
+var hue = jsHue();
+```
+</details>
+
 
 Then you can discover local bridges:
 
