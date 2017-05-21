@@ -3,7 +3,7 @@
  * JavaScript library for Philips Hue.
  *
  * @module jshue
- * @version 2.0.0
+ * @version 2.0.1
  * @author John Peloquin
  * @copyright Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
  */
@@ -674,7 +674,7 @@ if(typeof fetch !== 'undefined' && typeof Response !== 'undefined'
      * @return {Object} instance
      */
     var jsHue = jsHueAPI.bind(null, fetch, Response, JSON, Promise);
-    // Try to export to be used via require in NodeJS.
+    // Try to export to be used as a module via a bundler
     if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 	    module.exports = jsHue;
     }
