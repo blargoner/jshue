@@ -45,7 +45,7 @@ var hue = jsHue();
 
 
 <details>
-<summary>Alternatively, you can use a package manager like [yarn](https://yarnpkg.com/lang/en/) or [npm](http://npmjs.com/) (click arrow to show details)</summary>
+<summary>Alternatively, you can use a package manager like yarn or npm (click arrow to show details)</summary>
 
 ```.sh
 npm install --save jshue //or: yarn add jshue
