@@ -2,7 +2,7 @@
 
 A simple JavaScript library for Philips Hue.
 
-Version 2.0.0
+Version 2.0.1
 
 Copyright 2013 - 2017, John Peloquin and the jsHue contributors.
 
@@ -43,21 +43,34 @@ var hue = jsHue();
 ```
 
 
-Alternatively, if you use yarn or npm with a bundler like webpack or rollup (note: jshue is supposed to be used in a browser context):
-<details>
-<summary>npm install --save jshue</summary>
 
-```.js
+<details>
+<summary>Alternatively, you can use a package manager like [yarn](https://yarnpkg.com/lang/en/) or [npm](http://npmjs.com/) (click arrow to show details)</summary>
+
+```.sh
 npm install --save jshue //or: yarn add jshue
 ```
 
 then:
+
 ```js
-jsHue = require('jsHue'); // or: import jsHue from 'jsHue';
+import jsHue from 'jsHue';
 var hue = jsHue();
 ```
+
+or:
+
+```.js
+let jsHue = require('jsHue');
+var hue = jsHue();
+```
+
+Note: jshue is supposed to be used in a browser context, therefore you need a bundler like webpack, rollup or browserify when
+requiring or importing the module as in the above example.
+
 </details>
 
+---------------------------------
 
 Then you can discover local bridges:
 
