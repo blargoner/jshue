@@ -674,4 +674,8 @@ if(typeof fetch !== 'undefined' && typeof Response !== 'undefined'
      * @return {Object} instance
      */
     var jsHue = jsHueAPI.bind(null, fetch, Response, JSON, Promise);
+    // Try to export to be used via require in NodeJS.
+    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	    module.exports = jsHue;
+    }
 }
