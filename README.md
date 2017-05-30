@@ -30,7 +30,7 @@ an older environment, consider v0.3.0.)
 
 ## Getting Started
 
-[Download jsHue](https://github.com/nylki/jshue/releases) and include the source
+[Download jsHue](https://github.com/blargoner/jshue/releases) and include the source
 file in your HTML:
 
 ```html
