@@ -150,7 +150,7 @@ var jsHueAPI = (fetch, Response, JSON, Promise) => {
          * @method discover
          * @return {Promise} promise resolving to response data object
          */
-        discover: _get.bind(null, 'https://www.meethue.com/api/nupnp'),
+        discover: _get.bind(null, 'https://client-eastwood-dot-hue-prod-us.appspot.com/api/nupnp'),
         /**
          * Creates bridge object (jsHueBridge).
          *
