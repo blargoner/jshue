@@ -352,7 +352,7 @@ declare module 'jshue' {
     interface IHue {
         discover: () => Promise<Array<NUPNPType>>,
         bridge: (ip: IP) => {
-            createUser: (type: string) => Promise<Readonly<CreateUserType>>,
+            createUser: (type: string) => Promise<Readonly<Array<CreateUserType>>>,
             user: (username: string) => {
                 deleteUser: (username: string) => Promise<Readonly<SuccessType>>,
                 getConfig: () => Promise<Readonly<ConfigurationType>>,
