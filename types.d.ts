@@ -212,9 +212,6 @@ declare module 'jshue' {
 
     interface NewLightType {
         lastscan: string;
-        [key: string]: {
-            name: string;
-        }
     }
 
     interface SearchLightBodyType {
@@ -360,7 +357,7 @@ declare module 'jshue' {
                 getFullState: () => Promise<Readonly<FullStateType>>,
                 getLights: () => Promise<Readonly<LightsType>>,
                 getNewLights: () => Promise<Readonly<object>>,
-                searchForNewLights: (data?: SearchLightBodyType = null) => Promise<Readonly<SuccessWithKeyType>>,
+                searchForNewLights: (data?: SearchLightBodyType) => Promise<Readonly<SuccessWithKeyType>>,
                 getLight: (id: ID) => Promise<Readonly<LightType>>,
                 setLight: (id: ID, data: LightAttributeBodyType) => Promise<Readonly<Array<SuccessWithKeyType>>>,
                 setLightState: (id: ID, data: LightBodyType) => Promise<Readonly<Array<SuccessWithKeyType>>>,
@@ -407,5 +404,5 @@ declare module 'jshue' {
     }
 
     const jsHue: () => IHue;
-    export default jsHue;
 }
+export default jsHue;
