@@ -3,6 +3,7 @@
   "version": "2.1.1",
   "description": "A simple JavaScript library for Philips Hue",
   "main": "src/jshue.js",
+  "types": "types.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/blargoner/jshue.git"
@@ -20,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/blargoner/jshue/issues"
   },
-  "homepage": "https://github.com/blargoner/jshue#readme"
+  "homepage": "https://github.com/blargoner/jshue#readme",
+  "devDependencies": {
+    "typescript": "^3.7.5"
+  }
 }
